@@ -44,7 +44,7 @@
   background: repeating-linear-gradient(to bottom, transparent 0 3px, var(--rh24-line-color, rgb(51, 54, 57)) 3px 5px);
 }
 
-/* 目印モード: リプライを1行分に縮め、縦線だけ残す */
+/* 目印モード: リプライを1行分に縮め、縦線だけ点線で残す */
 [data-rh24-collapsed] {
   height: 32px !important;
   overflow: hidden !important;
@@ -61,7 +61,8 @@
   width: var(--rh24-line-w, 2px);
   top: var(--rh24-line-top, 0);
   bottom: var(--rh24-line-bottom, 0);
-  background: var(--rh24-line-color, rgb(51, 54, 57));
+  /* 通常モードのつなぎ目と同じく、省略した目印として点線で描く */
+  background: repeating-linear-gradient(to bottom, transparent 0 3px, var(--rh24-line-color, rgb(51, 54, 57)) 3px 5px);
 }
 
 [data-rh24-collapsed-end] {
