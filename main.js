@@ -14,19 +14,22 @@ const REPLY_LABEL = /^\s*(返信先|Replying to)/;
 let enabled = new Set();
 let registered = new Set();
 let showTrace = false;
+let showToMe = false;
 let scanQueued = false;
 const reportedNames = new Map();
 
 function readTargets() {
   try {
-    const { enabled: e = [], all = [], trace = false } = JSON.parse(document.documentElement.getAttribute(TARGETS_ATTR) || "{}");
+    const { enabled: e = [], all = [], trace = false, toMe = false } = JSON.parse(document.documentElement.getAttribute(TARGETS_ATTR) || "{}");
     enabled = new Set(e);
     registered = new Set(all);
     showTrace = trace;
+    showToMe = toMe;
   } catch {
     enabled = new Set();
     registered = new Set();
     showTrace = false;
+    showToMe = false;
   }
 }
 
@@ -65,14 +68,27 @@ function hasReplyLabel(article) {
   return false;
 }
 
-function shouldHide(article, tweet, author, focalId) {
+// ログイン中のユーザー: 画面左下のアカウント切り替えボタンにあるアバターの testid から読む。
+// 見つからなければサイドバーの「プロフィール」リンクで代用する
+function currentUser() {
+  const avatar = document.querySelector('[data-testid="SideNav_AccountSwitcher_Button"] [data-testid^="UserAvatar-Container-"]');
+  if (avatar) return avatar.getAttribute("data-testid").slice("UserAvatar-Container-".length).toLowerCase();
+  const profile = document.querySelector('a[data-testid="AppTabBar_Profile_Link"]');
+  return profile ? profile.getAttribute("href").slice(1).toLowerCase() : null;
+}
+
+function shouldHide(article, tweet, author, focalId, me) {
   if (!enabled.has(author)) return false;
   if (!tweet) return hasReplyLabel(article);
   // 開いているポスト自体は残す
   if (tweet.id_str === focalId) return false;
   if (!tweet.in_reply_to_status_id_str) return false;
   // 自分へのリプライ（連投スレッド）は本人の投稿の続きとして残す
-  return (tweet.in_reply_to_screen_name ?? "").toLowerCase() !== author;
+  const replyTo = (tweet.in_reply_to_screen_name ?? "").toLowerCase();
+  if (replyTo === author) return false;
+  // 自分宛てのリプライは、オプションがオンなら残す（返信するため）
+  if (showToMe && me && replyTo === me) return false;
+  return true;
 }
 
 // 会話の縦線: アバター列にある幅 3px 以下の要素。
@@ -212,6 +228,7 @@ function scan() {
   const focalId = location.pathname.match(/\/status\/(\d+)/)?.[1] ?? null;
   const toHide = new Map();
   const pendingNames = {};
+  const me = showToMe ? currentUser() : null;
 
   if (registered.size > 0) {
     for (const article of document.querySelectorAll('article[data-testid="tweet"]')) {
@@ -219,7 +236,7 @@ function scan() {
       const author = (tweet?.user?.screen_name ?? authorOf(article) ?? "").toLowerCase();
       noteName(author, tweet, article, pendingNames);
       const cell = article.closest('[data-testid="cellInnerDiv"]');
-      if (cell && shouldHide(article, tweet, author, focalId)) {
+      if (cell && shouldHide(article, tweet, author, focalId, me)) {
         toHide.set(cell, "");
       }
     }

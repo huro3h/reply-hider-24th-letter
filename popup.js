@@ -10,6 +10,10 @@ const showTrace = document.getElementById("show-trace");
 chrome.storage.sync.get({ showTrace: false }).then((o) => (showTrace.checked = o.showTrace));
 showTrace.addEventListener("change", () => chrome.storage.sync.set({ showTrace: showTrace.checked }));
 
+const showToMe = document.getElementById("show-to-me");
+chrome.storage.sync.get({ showToMe: false }).then((o) => (showToMe.checked = o.showToMe));
+showToMe.addEventListener("change", () => chrome.storage.sync.set({ showToMe: showToMe.checked }));
+
 // 旧形式（handles: string[]）からの移行込みで読む
 async function loadUsers() {
   const { users, handles } = await chrome.storage.sync.get(["users", "handles"]);

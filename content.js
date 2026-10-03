@@ -8,6 +8,7 @@ const normalize = (h) => h.trim().replace(/^@/, "").toLowerCase();
 
 let users = [];
 let showTrace = false;
+let showToMe = false;
 
 // 旧形式（handles: string[]）からの移行込みで読む
 async function loadUsers() {
@@ -24,19 +25,22 @@ function publish() {
     enabled: users.filter((u) => u.enabled).map((u) => u.handle),
     all: users.map((u) => u.handle),
     trace: showTrace,
+    toMe: showToMe,
   }));
 }
 
-Promise.all([loadUsers(), chrome.storage.sync.get({ showTrace: false })]).then(([loaded, options]) => {
+Promise.all([loadUsers(), chrome.storage.sync.get({ showTrace: false, showToMe: false })]).then(([loaded, options]) => {
   users = loaded;
   showTrace = options.showTrace;
+  showToMe = options.showToMe;
   publish();
 });
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area !== "sync" || !(changes.users || changes.showTrace)) return;
+  if (area !== "sync" || !(changes.users || changes.showTrace || changes.showToMe)) return;
   if (changes.users) users = changes.users.newValue || [];
   if (changes.showTrace) showTrace = Boolean(changes.showTrace.newValue);
+  if (changes.showToMe) showToMe = Boolean(changes.showToMe.newValue);
   publish();
 });
 
