@@ -1,44 +1,44 @@
-[data-xrh-hidden] {
+[data-rh24-hidden] {
   display: none !important;
 }
 
 /* 非表示にしたリプライへつながっていた会話の縦線 */
-[data-xrh-line-off] {
+[data-rh24-line-off] {
   visibility: hidden !important;
 }
 
 /* 縦線を切ったポストの下に区切り線を補う */
-[data-xrh-cut-below]::after {
+[data-rh24-cut-below]::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: var(--xrh-sep-width, 1px);
-  background: var(--xrh-sep-color, rgb(47, 51, 54));
+  height: var(--rh24-sep-width, 1px);
+  background: var(--rh24-sep-color, rgb(47, 51, 54));
   pointer-events: none;
 }
 
 /* 目印モード: リプライを1行分に縮め、縦線だけ残す */
-[data-xrh-collapsed] {
+[data-rh24-collapsed] {
   height: 32px !important;
   overflow: hidden !important;
 }
 
-[data-xrh-collapsed] > * {
+[data-rh24-collapsed] > * {
   display: none !important;
 }
 
-[data-xrh-collapsed]::before {
+[data-rh24-collapsed]::before {
   content: "";
   position: absolute;
-  left: var(--xrh-line-x, 35px);
-  width: var(--xrh-line-w, 2px);
-  top: var(--xrh-line-top, 0);
-  bottom: var(--xrh-line-bottom, 0);
-  background: var(--xrh-line-color, rgb(51, 54, 57));
+  left: var(--rh24-line-x, 35px);
+  width: var(--rh24-line-w, 2px);
+  top: var(--rh24-line-top, 0);
+  bottom: var(--rh24-line-bottom, 0);
+  background: var(--rh24-line-color, rgb(51, 54, 57));
 }
 
-[data-xrh-collapsed-end] {
-  box-shadow: inset 0 calc(-1 * var(--xrh-sep-width, 1px)) 0 var(--xrh-sep-color, rgb(47, 51, 54));
+[data-rh24-collapsed-end] {
+  box-shadow: inset 0 calc(-1 * var(--rh24-sep-width, 1px)) 0 var(--rh24-sep-color, rgb(47, 51, 54));
 }

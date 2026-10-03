@@ -2,8 +2,8 @@
 // main.js はページの JS 世界で動くため chrome.storage を使えない。
 // 逆方向（main.js が見つけた表示名）は postMessage で受け取って保存する。
 
-const ATTR = "data-xrh-targets";
-const MESSAGE_SOURCE = "x-reply-hider";
+const ATTR = "data-rh24-targets";
+const MESSAGE_SOURCE = "reply-hider-24th-letter";
 const normalize = (h) => h.trim().replace(/^@/, "").toLowerCase();
 
 let users = [];

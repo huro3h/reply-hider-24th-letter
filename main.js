@@ -2,13 +2,13 @@
 // リプライ欄などは「返信先」表示が出ないため、React が持つポストのデータで判定する。
 // そのためページの JS 世界（world: MAIN）で動かす。
 
-const TARGETS_ATTR = "data-xrh-targets";
-const HIDDEN_ATTR = "data-xrh-hidden";
-const LINE_OFF_ATTR = "data-xrh-line-off";
-const CUT_BELOW_ATTR = "data-xrh-cut-below";
-const COLLAPSED_ATTR = "data-xrh-collapsed";
-const COLLAPSED_END_ATTR = "data-xrh-collapsed-end";
-const MESSAGE_SOURCE = "x-reply-hider";
+const TARGETS_ATTR = "data-rh24-targets";
+const HIDDEN_ATTR = "data-rh24-hidden";
+const LINE_OFF_ATTR = "data-rh24-line-off";
+const CUT_BELOW_ATTR = "data-rh24-cut-below";
+const COLLAPSED_ATTR = "data-rh24-collapsed";
+const COLLAPSED_END_ATTR = "data-rh24-collapsed-end";
+const MESSAGE_SOURCE = "reply-hider-24th-letter";
 const REPLY_LABEL = /^\s*(返信先|Replying to)/;
 
 let enabled = new Set();
@@ -108,15 +108,15 @@ function threadLinesOf(cell) {
 // 区切り線の色と太さをページ上の実物から取り、CSS 変数にしておく
 function captureSeparatorStyle(cell) {
   const root = document.documentElement;
-  if (root.style.getPropertyValue("--xrh-sep-color")) return;
+  if (root.style.getPropertyValue("--rh24-sep-color")) return;
   const cellRect = cell.getBoundingClientRect();
   for (const el of cell.querySelectorAll("div")) {
     const cs = getComputedStyle(el);
     if (!(parseFloat(cs.borderBottomWidth) > 0)) continue;
     const r = el.getBoundingClientRect();
     if (r.width < cellRect.width * 0.9 || cellRect.bottom - r.bottom > 1) continue;
-    root.style.setProperty("--xrh-sep-color", cs.borderBottomColor);
-    root.style.setProperty("--xrh-sep-width", cs.borderBottomWidth);
+    root.style.setProperty("--rh24-sep-color", cs.borderBottomColor);
+    root.style.setProperty("--rh24-sep-width", cs.borderBottomWidth);
     return;
   }
 }
@@ -130,11 +130,11 @@ function visibleSibling(cell, dir) {
 // 縦線の位置・太さ・色をページ上の実物から取り、目印モードの線に使う
 function captureLineStyle(cell, line) {
   const root = document.documentElement;
-  if (root.style.getPropertyValue("--xrh-line-color")) return;
+  if (root.style.getPropertyValue("--rh24-line-color")) return;
   const r = line.getBoundingClientRect();
-  root.style.setProperty("--xrh-line-color", getComputedStyle(line).backgroundColor);
-  root.style.setProperty("--xrh-line-x", `${r.left - cell.getBoundingClientRect().left}px`);
-  root.style.setProperty("--xrh-line-w", `${r.width}px`);
+  root.style.setProperty("--rh24-line-color", getComputedStyle(line).backgroundColor);
+  root.style.setProperty("--rh24-line-x", `${r.left - cell.getBoundingClientRect().left}px`);
+  root.style.setProperty("--rh24-line-w", `${r.width}px`);
 }
 
 // 非表示にしたセルをまたいで縦線がつながって見えないよう、前後の線を切る
@@ -163,8 +163,8 @@ function drawTraceLines() {
     if (line) captureLineStyle(line === below ? prev : next, line);
     const fromPrev = Boolean(below) || prev?.hasAttribute(COLLAPSED_ATTR);
     const toNext = Boolean(above) || next?.hasAttribute(COLLAPSED_ATTR);
-    cell.style.setProperty("--xrh-line-top", fromPrev ? "0" : "50%");
-    cell.style.setProperty("--xrh-line-bottom", toNext ? "0" : "50%");
+    cell.style.setProperty("--rh24-line-top", fromPrev ? "0" : "50%");
+    cell.style.setProperty("--rh24-line-bottom", toNext ? "0" : "50%");
     // 会話の最後だったリプライなら区切り線を引く
     if (!toNext) cell.setAttribute(COLLAPSED_END_ATTR, "");
   }
@@ -178,10 +178,10 @@ function clearDecorations() {
 
 // 区切り線の見本を探す（まだ取れていなければ）
 function ensureSeparatorStyle() {
-  if (document.documentElement.style.getPropertyValue("--xrh-sep-color")) return;
+  if (document.documentElement.style.getPropertyValue("--rh24-sep-color")) return;
   for (const cell of document.querySelectorAll(`[data-testid="cellInnerDiv"]:not([${HIDDEN_ATTR}]):not([${COLLAPSED_ATTR}])`)) {
     captureSeparatorStyle(cell);
-    if (document.documentElement.style.getPropertyValue("--xrh-sep-color")) return;
+    if (document.documentElement.style.getPropertyValue("--rh24-sep-color")) return;
   }
 }
 
@@ -213,8 +213,8 @@ function applyMarks(attr, marks) {
     if (!marks.has(cell)) {
       cell.removeAttribute(attr);
       if (attr === COLLAPSED_ATTR) {
-        cell.style.removeProperty("--xrh-line-top");
-        cell.style.removeProperty("--xrh-line-bottom");
+        cell.style.removeProperty("--rh24-line-top");
+        cell.style.removeProperty("--rh24-line-bottom");
       }
     }
   }

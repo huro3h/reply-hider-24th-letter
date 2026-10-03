@@ -10,6 +10,11 @@
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-10-03
+
+### Changed
+- **名前を「Reply Hider for the 24th Letter」に変更**: 拡張機能の名前に X の商標を直接使わないようにした（旧名: X Reply Hider）。リポジトリ名も `reply-hider-24th-letter` に変えた。
+
 ## [1.1.0] - 2026-10-03
 
 ### Added
