@@ -1,0 +1,44 @@
+[data-xrh-hidden] {
+  display: none !important;
+}
+
+/* 非表示にしたリプライへつながっていた会話の縦線 */
+[data-xrh-line-off] {
+  visibility: hidden !important;
+}
+
+/* 縦線を切ったポストの下に区切り線を補う */
+[data-xrh-cut-below]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--xrh-sep-width, 1px);
+  background: var(--xrh-sep-color, rgb(47, 51, 54));
+  pointer-events: none;
+}
+
+/* 目印モード: リプライを1行分に縮め、縦線だけ残す */
+[data-xrh-collapsed] {
+  height: 32px !important;
+  overflow: hidden !important;
+}
+
+[data-xrh-collapsed] > * {
+  display: none !important;
+}
+
+[data-xrh-collapsed]::before {
+  content: "";
+  position: absolute;
+  left: var(--xrh-line-x, 35px);
+  width: var(--xrh-line-w, 2px);
+  top: var(--xrh-line-top, 0);
+  bottom: var(--xrh-line-bottom, 0);
+  background: var(--xrh-line-color, rgb(51, 54, 57));
+}
+
+[data-xrh-collapsed-end] {
+  box-shadow: inset 0 calc(-1 * var(--xrh-sep-width, 1px)) 0 var(--xrh-sep-color, rgb(47, 51, 54));
+}
