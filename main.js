@@ -6,6 +6,8 @@ const TARGETS_ATTR = "data-rh24-targets";
 const HIDDEN_ATTR = "data-rh24-hidden";
 const LINE_OFF_ATTR = "data-rh24-line-off";
 const CUT_BELOW_ATTR = "data-rh24-cut-below";
+const GAP_BELOW_ATTR = "data-rh24-gap-below";
+const GAP_ABOVE_ATTR = "data-rh24-gap-above";
 const COLLAPSED_ATTR = "data-rh24-collapsed";
 const COLLAPSED_END_ATTR = "data-rh24-collapsed-end";
 const MESSAGE_SOURCE = "reply-hider-24th-letter";
@@ -137,17 +139,34 @@ function captureLineStyle(cell, line) {
   root.style.setProperty("--rh24-line-w", `${r.width}px`);
 }
 
-// 非表示にしたセルをまたいで縦線がつながって見えないよう、前後の線を切る
+// 隠したリプライの先も会話が続くとき、つなぎ目を点線で描き直す。
+// 線を切ると文脈が途切れ、実線のままだと前後のポストが直接やり取りしたように見えるため
+function markGap(prev, below, next, above) {
+  captureLineStyle(prev, below);
+  below.setAttribute(LINE_OFF_ATTR, "");
+  above.setAttribute(LINE_OFF_ATTR, "");
+  prev.setAttribute(GAP_BELOW_ATTR, "");
+  prev.style.setProperty("--rh24-gap-top", `${below.getBoundingClientRect().top - prev.getBoundingClientRect().top}px`);
+  next.setAttribute(GAP_ABOVE_ATTR, "");
+  next.style.setProperty("--rh24-gap-height", `${above.getBoundingClientRect().height}px`);
+}
+
+// 非表示にしたセルで会話が途切れるなら、前後の線を切る。
+// 前後とも線がある（隠したリプライの先も会話が続く）ときは、点線でつなぐ
 function repairThreadLines() {
   for (const cell of document.querySelectorAll(`[${HIDDEN_ATTR}]`)) {
     const prev = visibleSibling(cell, "previousElementSibling");
     const next = visibleSibling(cell, "nextElementSibling");
     const below = prev && threadLinesOf(prev).below;
+    const above = next && threadLinesOf(next).above;
+    if (below && above) {
+      markGap(prev, below, next, above);
+      continue;
+    }
     if (below) {
       below.setAttribute(LINE_OFF_ATTR, "");
       prev.setAttribute(CUT_BELOW_ATTR, "");
     }
-    const above = next && threadLinesOf(next).above;
     if (above) above.setAttribute(LINE_OFF_ATTR, "");
   }
 }
@@ -171,7 +190,7 @@ function drawTraceLines() {
 }
 
 function clearDecorations() {
-  for (const attr of [LINE_OFF_ATTR, CUT_BELOW_ATTR, COLLAPSED_END_ATTR]) {
+  for (const attr of [LINE_OFF_ATTR, CUT_BELOW_ATTR, GAP_BELOW_ATTR, GAP_ABOVE_ATTR, COLLAPSED_END_ATTR]) {
     for (const el of document.querySelectorAll(`[${attr}]`)) el.removeAttribute(attr);
   }
 }

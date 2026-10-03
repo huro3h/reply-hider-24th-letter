@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Reply Hider for the 24th Letter",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "指定したユーザーが書いたリプライだけを非表示にします",
   "permissions": [
     "storage"

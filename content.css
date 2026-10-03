@@ -19,6 +19,31 @@
   pointer-events: none;
 }
 
+/* 隠したリプライの先も会話が続くとき、つなぎ目を点線にする（間を省略した目印）。
+   前のポストは線の下端 16px、次のポストはセル上端からアバターまでの線を点線で描き直す */
+[data-rh24-gap-below]::after,
+[data-rh24-gap-above]::before {
+  content: "";
+  position: absolute;
+  left: var(--rh24-line-x, 31px);
+  width: var(--rh24-line-w, 2px);
+  pointer-events: none;
+}
+
+[data-rh24-gap-below]::after {
+  top: var(--rh24-gap-top, 0);
+  bottom: 0;
+  background:
+    linear-gradient(var(--rh24-line-color, rgb(51, 54, 57)), var(--rh24-line-color, rgb(51, 54, 57))) top / 100% calc(100% - 16px) no-repeat,
+    repeating-linear-gradient(to top, var(--rh24-line-color, rgb(51, 54, 57)) 0 2px, transparent 2px 5px) bottom / 100% 16px no-repeat;
+}
+
+[data-rh24-gap-above]::before {
+  top: 0;
+  height: var(--rh24-gap-height, 8px);
+  background: repeating-linear-gradient(to bottom, transparent 0 3px, var(--rh24-line-color, rgb(51, 54, 57)) 3px 5px);
+}
+
 /* 目印モード: リプライを1行分に縮め、縦線だけ残す */
 [data-rh24-collapsed] {
   height: 32px !important;
